@@ -1,0 +1,25 @@
+name: Publish source from Drive
+on:
+  push:
+    paths:
+      - ".github/workflows/publish-from-drive.yml"
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download, verify and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 2 -o source.tar.xz "https://drive.usercontent.google.com/download?id=1HmEPRofcCBNXfgDNU_UZtZgVQI1E0FfD&export=download&confirm=t"
+          echo "10195804b26739dbe0aedb467018d703ab59ea199474bfef3edffbd1d0c629f6  source.tar.xz" | sha256sum -c -
+          xz -dc source.tar.xz | tar -xf -
+          rm -f source.tar.xz .github/workflows/publish-from-drive.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: publish project source"
+          git push
