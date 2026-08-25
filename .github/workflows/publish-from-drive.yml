@@ -1,5 +1,6 @@
 name: Publish source from Drive
 on:
+  workflow_dispatch:
   push:
     paths:
       - ".github/workflows/publish-from-drive.yml"
